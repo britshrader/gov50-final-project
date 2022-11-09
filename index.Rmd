@@ -82,16 +82,6 @@ total_data |>
 
 total_data |>
   ggplot(aes(x = year,
-             y = ssitotal)) +
-  geom_line(aes(group = st)) +
-  geom_smooth(size = 2) +
-  labs(x = "Year",
-       y = "Total Spent on SSI",
-       title = "Total Spent on SSI by year and state") +
-  xlim(1980, 2011)
-
-total_data |>
-  ggplot(aes(x = year,
              y = apwpi)) +
   geom_line(aes(group = st)) +
   geom_smooth(size = 2) +
@@ -250,7 +240,7 @@ total_data |>
   ggplot(aes(x = apwpi,
              y = (JURTOTM + JURTOTF)/poptotal*100)) +
   geom_point() +
-  geom_smooth(method = "lm") +
+  geom_smooth() +
   ylim(0,1) +
    labs(x = "Welfare spending as % of state income",
        y = "Inmates under jurisdiction as % of state population",

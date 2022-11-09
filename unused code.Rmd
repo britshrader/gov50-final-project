@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## Under custody
 
 
-```{r cars}
+```{r}
 total_data |>
   ggplot(aes(x = year,
              y = CUSTOTT)) +
@@ -32,4 +32,15 @@ total_data |>
   xlim(1999, 2019)
 ```
 
+```{r}
+total_data |>
+  ggplot(aes(x = year,
+             y = ssitotal)) +
+  geom_line(aes(group = st)) +
+  geom_smooth(size = 2) +
+  labs(x = "Year",
+       y = "Total Spent on SSI",
+       title = "Total Spent on SSI by year and state") +
+  xlim(1980, 2011)
+```
 
