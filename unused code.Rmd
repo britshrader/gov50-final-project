@@ -1,0 +1,35 @@
+---
+title: "unused code"
+author: "Brit Shrader"
+date: "2022-11-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Under custody
+
+
+```{r cars}
+total_data |>
+  ggplot(aes(x = year,
+             y = CUSTOTT)) +
+  geom_line(aes(group = st)) +
+  labs(x = "Year",
+       y = "Total inmates under custody",
+       title = "Total inmates under custody by state, 1999-2019") +
+  xlim(1978, 1982)
+
+total_data |>
+  ggplot(aes(x = year,
+             y = CWPRIVM + CWPRIVF)) +
+  geom_line(aes(group = st)) +
+  labs(x = "Year",
+       y = "Total inmates under custody",
+       title = "Total inmates under custody by state, 1999-2019") +
+  xlim(1999, 2019)
+```
+
+
