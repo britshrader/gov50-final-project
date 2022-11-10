@@ -142,7 +142,7 @@ total_data |>
   geom_smooth(size = 2) +
   labs(x = "Year",
        y = "Total inmates admitted",
-       title = "Total inmate admissions by state per year, 1999-2019") +
+       title = "Total inmate admissions by state per year, 1978-2019") +
   xlim(1978, 2019)
 
 ```
@@ -156,7 +156,7 @@ total_data |>
   ylim(c(0,.75)) +
    labs(x = "Log of welfare spending per capita",
        y = "Inmate admission as % of state population",
-       title = "Inmate admission vs log of welfare spending")
+       title = "Inmate admission vs log of welfare spending, 1978-2019")
 
 total_data |>
   ggplot(aes(x = log(welfare_spending_percap),
@@ -166,7 +166,7 @@ total_data |>
   ylim(c(0,1)) +
    labs(x = "Log of welfare spending per capita",
        y = "Inmates under jurisdiction as % of state population",
-       title = "Inmates under jurisdiction vs log of welfare spending")
+       title = "Inmates under jurisdiction vs log of welfare spending, 1978-2019")
 
 
 ```
@@ -182,7 +182,7 @@ total_data |>
   ylim(0,.75) +
    labs(x = "Welfare spending as % of state income",
        y = "Inmate admission as % of state population",
-       title = "Inmate admission vs welfare spending") 
+       title = "Inmate admission vs welfare spending, 1978-2019") 
 
 
 total_data |>
@@ -193,7 +193,7 @@ total_data |>
   ylim(0,1) +
    labs(x = "Welfare spending as % of state income",
        y = "Inmates under jurisdiction as % of state population",
-       title = "Inmates under jurisdiction vs welfare spending")
+       title = "Inmates under jurisdiction vs % welfare spending, 1978-2019")
   
 ```
 
@@ -209,7 +209,7 @@ total_data |>
   ylim(0,.75) +
    labs(x = "Welfare spending as % of state income",
        y = "Inmate admission as % of state population",
-       title = "Inmate admission vs welfare spending") 
+       title = "Inmate admission vs welfare spending, California 1978-2019") 
 
 total_data |>
   filter(st == "CA") |>
@@ -220,7 +220,7 @@ total_data |>
   ylim(0,1) +
    labs(x = "Welfare spending as % of state income",
        y = "Inmates under jurisdiction as % of state population",
-       title = "Inmates under jurisdiction vs welfare spending")
+       title = "Inmates under jurisdiction vs % welfare spending, California 1978-2019")
 
 ## Years 
 
@@ -233,7 +233,7 @@ total_data |>
   ylim(0,.75) +
    labs(x = "Welfare spending as % of state income",
        y = "Inmate admission as % of state population",
-       title = "Inmate admission vs welfare spending") 
+       title = "Inmate admission vs % welfare spending, 1978-2000") 
 
 total_data |>
   filter(year < 2000) |>
@@ -244,7 +244,7 @@ total_data |>
   ylim(0,1) +
    labs(x = "Welfare spending as % of state income",
        y = "Inmates under jurisdiction as % of state population",
-       title = "Inmates under jurisdiction vs welfare spending")
+       title = "Inmates under jurisdiction vs % welfare spending, 1978-2000")
 ```
 
 
