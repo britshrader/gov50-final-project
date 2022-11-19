@@ -22,6 +22,8 @@ Does incarceration act as an alternative to welfare or, alternatively, does incr
 ```{r}
 library(tidyverse)
 library(infer)
+library(broom)
+library(dplyr)
 ```
 
 ```{r}
@@ -184,7 +186,6 @@ total_data |>
        y = "Inmate admission as % of state population",
        title = "Inmate admission vs welfare spending, 1978-2019") 
 
-
 total_data |>
   ggplot(aes(x = apwpi,
              y = (JURTOTM + JURTOTF)/poptotal*100)) +
@@ -247,5 +248,26 @@ total_data |>
        title = "Inmates under jurisdiction vs % welfare spending, 1978-2000")
 ```
 
+## Data Analysis 
 
+```{r}
+## welfare spending % vs admission
 
+lm_apwpi <- lm((ADTOTM + ADTOTF) ~ apwpi, data = total_data)
+
+lm_apwpi |>
+broom::tidy() |> select(term, estimate) |> knitr::kable(digits = 2)
+
+glance(lm_apwpi)
+```
+This linear model estimates that there is, on average, an increase of 101122.46 inmate admissions with a unit increase in welfare spending as  percent of state income (from a percent of 0 to 100). 
+
+```{r}
+lm_apwpi_year <- lm((ADTOTM + ADTOTF) ~ apwpi + year, data = total_data)
+
+lm_apwpi_year |>
+broom::tidy() |> select(term, estimate) |> knitr::kable(digits = 2)
+
+glance(lm_apwpi_year)
+```
+This linear model estimates that there is, on average, an decrease of -174428.6 inmate admissions with a unit increase in welfare spending as the percent of state income (from a percent of 0 to 100), when holding the year the same. Additionally, it estimates that there is an increase of 400.7 inmate admissions with a unit increase in year, when holding welfare spending as  percent of state income the same. 

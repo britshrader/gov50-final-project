@@ -44,3 +44,23 @@ total_data |>
   xlim(1980, 2011)
 ```
 
+```{r}
+welfare_cap_admit_1990 <- lm((ADTOTM + ADTOTF) ~ welfare_spending_percap + year, data = total_data, subset = (year < 1990) & (st == "CA")) 
+welfare_cap_admit_1990
+```
+
+```{r}
+## welfare spending per cap vs admission
+
+lm_welfare_cap <- lm((ADTOTM + ADTOTF) ~ welfare_spending_percap, data = total_data) 
+
+lm_welfare_cap |>
+broom::tidy() |> select(term, estimate) |> knitr::kable(digits = 2)
+
+lm_welfare_cap_year <- lm((ADTOTM + ADTOTF) ~ welfare_spending_percap + year, data = total_data)
+
+welfare_cap_admit_year |>
+broom::tidy() |> select(term, estimate) |> knitr::kable(digits = 2)
+
+```
+
