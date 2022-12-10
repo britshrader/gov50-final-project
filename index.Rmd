@@ -7,23 +7,20 @@ output:
     self_contained: false
 ---
 
+## Introduction 
 
+Does incarceration act as an alternative to welfare or, alternatively, does increased welfare decrease incarceration? Scholars of mass incarceration and prison abolition argue that governments rely on prisons and policing to manage socio-economic problems. Using this framework, I hypothesize that incarceration admission rates increase with decreased welfare spending, with both increased welfare spending decreasing poverty-associated criminalized acts and decreased welfare spending increasing state reliance on incarceration to address poverty. In this study, I specifically focus on the extent to which incarceration admission rates are associated with welfare spending per capita. Therefore, I expect that incarceration admission rates and welfare spending per capita will have a negative relationship. In other words, I expect that incarceration admission rates decrease with increased welfare spending per capita and incarceration admission rates increase with decreased welfare spending per capita. 
 
-## Project thoughts
+If I observe increased incarceration rates associated with decreased welfare spending per capita, this will support my hypothesis. However, if I observe decreased incarceration rates associated with decreased welfare spending per capita, this will provide evidence against my hypothesis. When I run my regression of the incarceration rate on the welfare spending per capita variable, a negative, significant coefficient would indicate support for my hypothesis. 
 
-I am interested in exploring data related to the Prison Industrial Complex or Harvard's endowment. For the Prison Industrial Complex, I'm interested in exploring the relationship between de-institutionalization of disabled folks and the rise of the prisons. For Harvard's endowment, I am particularly interested in descriptive statistics, so I would still need to find questions that could be answered with regression. 
-
-## Project proposal and data 
-
-Does incarceration act as an alternative to welfare or, alternatively, does increased welfare decrease incarceration? In this study, I plan to examine the extent to which periods of increased incarceration rates are associated with decreased welfare spending per capita. I hypothesize that incarceration rates increase during periods of decreased welfare spending, with both increased welfare spending decreasing poverty-associated criminalized acts and decreased welfare spending increasing state reliance on incarceration to address poverty. Therefore, during periods of increased welfare spending per capita, I expect that incarceration rates will decrease. During periods of decreased welfare spending per capita, I expect that incarceration rates will increase. My sample is comprised of state level incarceration and welfare spending per capita from 1999-2006. My unit of analysis is the year (e.g., 1999). The explanatory variable of interest is welfare spending per capita. The variable is coded as a number representing the dollar amount spent on welfare per capita. For instance, if the variable were coded as 50, that would mean the state government spent 50 dollars per person on welfare. For a given year, the welfare spending per capita is recorded in the Correlates of State Policy Project database <http://ippsr.msu.edu/public-policy/correlates-state-policy>. My outcome variable is the number of incarcerated people in a state per 100,000 people. For instance, if the variable were coded 50, that would mean for every 100,000 people in that state, 50 were incarcerated. For a given year, the number of inmates in a state is recorded in the National Prisoner Statistics database <https://www.icpsr.umich.edu/web/NACJD/studies/38249>. If I observe increased incarceration rates during years with decreased welfare spending per capita, this will support my hypothesis. However, if I observe decreased incarceration rates during years with decreased welfare spending per capita, this will provide evidence against my hypothesis. When I run my regression of the incarceration rate on the welfare spending per capita variable, a negative, significant coefficient would indicate support for my hypothesis. 
-
-## Data visualization 
+## Data 
 
 ```{r}
 library(tidyverse)
 library(infer)
 library(broom)
 library(dplyr)
+library(modelsummary)
 ```
 
 ```{r}
@@ -33,10 +30,6 @@ cspp_data_welfare <- read.csv("project_data/cspp_data_welfare.csv")
 
 cspp_cleaned_welfare <- cspp_data_welfare |>
   select(st, year, 
-         welfare_spending_percap,
-         exp_public_welfare,
-         ssitotal,
-         apwpi,
          apwspt)
 
 cspp_data_pop <- read.csv("project_data/cspp_data_population.csv")
@@ -47,11 +40,7 @@ npp_data <- da38249.0001
 
 npp_cleaned_data <- npp_data |>
   select(STATE, YEAR,
-         CUSTOTT,
-         CWPRIVM, CWPRIVF,
-         JURTOTM, JURTOTF,
-         ADTOTM, ADTOTF,
-         WHITEM, WHITEF, HISPM, HISPF, AIANM, AIANF, ASIANM, ASIANF, NHPIM, NHPIF, APIM, APIF, TWORACEM, TWORACEF)
+         ADTOTM, ADTOTF)
 ```
 
 ```{r}
@@ -71,203 +60,93 @@ total_data <- cspp_data |>
 ```
 
 ```{r}
-## welfare spending 
-total_data |>
-  ggplot(aes(x = year,
-             y = welfare_spending_percap)) +
-  geom_line(aes(group = st)) +
-  geom_smooth(size = 2) +
-  labs(x = "Year",
-       y = "Welfare Spending Per Capita",
-       title = "Welfare Spending Per Capita by year and state") +
-  xlim(1975, 2006) 
-
-total_data |>
-  ggplot(aes(x = year,
-             y = apwpi)) +
-  geom_line(aes(group = st)) +
-  geom_smooth(size = 2) +
-  labs(x = "Year",
-       y = "Welfare spending as % of income",
-       title = "Welfare spending as % of income by year and state") +
-  xlim(1977, 2000)
-
-total_data |>
-  ggplot(aes(x = year,
-             y = apwpi)) +
-  geom_line(aes(group = st)) +
-  geom_smooth(size = 2) +
-  labs(x = "Year",
-       y = "Welfare spending as % of income",
-       title = "Welfare spending as % of income by year and state") +
-  xlim(2004, 2015)
-
-total_data |>
-  ggplot(aes(x = year,
-             y = apwspt)) +
-  geom_line(aes(group = st)) +
-  geom_smooth(size = 2) +
-  labs(x = "Year",
-       y = "Welfare spending in millions",
-       title = "Welfare spending in millions by year and state") +
-  xlim(1977, 2000) +
-  ylim(0, 30000)
-
-total_data |>
-  ggplot(aes(x = year,
-             y = apwspt)) +
-  geom_line(aes(group = st)) +
-  geom_smooth(size = 2) +
-  labs(x = "Year",
-       y = "Welfare spending in millions",
-       title = "Welfare spending in millions by year and state") +
-  xlim(2004, 2015) 
+total_data <- total_data |> 
+  mutate(admit = ADTOTM + ADTOTF,
+         apwspt_cap = ifelse(is.na(poptotal) == FALSE, (apwspt/poptotal)*1000000, (apwspt/pop_annual)*1000000))
 ```
 
+A section describing your data, including the type of research design (e.g. experimental, cross-sectional, longitudinal, etc.) and a plot that summarizes the dependent variable (the length here may depend on how complicated your data is, but most data sections will be a couple of paragraphs)
+
+My sample is comprised of state level inmate admissions data and welfare spending per capita from 1977-2015. My unit of analysis is state and year data. 
+
+The explanatory variable of interest is welfare spending per capita. The variable is coded as a number representing the dollar amount spent on welfare per capita during a given year. For instance, if the variable were coded as 50, that would mean the state and local governments within the state spent 50 dollars per person on welfare total that year. For a given year, the amount the state and local governments spent on public welfare and veterans' services through direct expenditure is recorded in the Correlates of State Policy Project database <http://ippsr.msu.edu/public-policy/correlates-state-policy>. The welfare spending per capita was coded as the expenditure divided by the state population during the same year. This state population is also recorded in the Correlates of State Policy Project database. However, there are two variables recording this data. Thus, the variable used differs based on which is recorded in the given year.  
+
+My outcome variable is the number of individuals admitted to a carceral facility in a state during a given year with a sentence of more than one year. For instance, if the variable were coded 50 that would mean 50 individuals with a sentence of more than one year were admitted to a carceral facility in the state during a given year. The number of male and female individuals with a sentence of more than one year were admitted to a local, federal, private, or state prison or jail within a state in a given year is recorded in the National Prisoner Statistics database <https://www.icpsr.umich.edu/web/NACJD/studies/38249>. The total admissions is coded as the sum of the male and female admissions. 
+
+The data for this research is observational, and my research design is cross-sectional. I perform a regression analysis with the incarceration admission rates as the dependent variable and welfare spending per capita as the independent variable. Due to possible time and state trends, I perform multiple regressions with the incarceration admission rates as the dependent variable and welfare spending per capita as an independent variable while controlling for year and state as additional independent variables. Additionally, I perform a multiple regression with incarceration admission rates as the dependent variable and state and year as the independent variables to examine the fit of the regression while excluding welfare spending per capita as an explanatory variable. 
+
+## Data visualization 
+
+
 ```{r}
-
-total_data |>
-  ggplot(aes(x = year,
-             y = JURTOTM + JURTOTF)) +
-  geom_line(aes(group = st)) +
-  geom_smooth(size = 2) +
-  labs(x = "Year",
-       y = "Total inmates under jurisdiction",
-       title = "Total inmates under jurisdiction by state, 1978-2019") +
-  xlim(1978, 2019)
-  
-
 total_data |>
   ggplot(aes(x = year,
              y = ADTOTM + ADTOTF)) +
   geom_line(aes(group = st)) +
-  geom_smooth(size = 2) +
+  geom_smooth(size = 1.5) +
   labs(x = "Year",
-       y = "Total inmates admitted",
-       title = "Total inmate admissions by state per year, 1978-2019") +
-  xlim(1978, 2019)
+       y = "Total admissions",
+       title = "Total inmate admissions per year by state, 1978-2015") +
+  xlim(1978, 2015) +
+  scale_y_continuous(labels = scales::comma)
 
 ```
 
+## Results  
+
 ```{r}
-total_data |>
-  ggplot(aes(x = log(welfare_spending_percap),
-             y = (ADTOTM + ADTOTF)/(poptotal)*100)) +
-  geom_point() +
-  geom_smooth() +
-  ylim(c(0,.75)) +
-   labs(x = "Log of welfare spending per capita",
-       y = "Inmate admission as % of state population",
-       title = "Inmate admission vs log of welfare spending, 1978-2019")
+lm_1 <- lm(admit ~ apwspt_cap, data = total_data)
 
-total_data |>
-  ggplot(aes(x = log(welfare_spending_percap),
-             y = (JURTOTM + JURTOTF)/poptotal*100)) +
-  geom_point() +
-  geom_smooth() +
-  ylim(c(0,1)) +
-   labs(x = "Log of welfare spending per capita",
-       y = "Inmates under jurisdiction as % of state population",
-       title = "Inmates under jurisdiction vs log of welfare spending, 1978-2019")
+lm_mult_1 <- lm(admit ~ apwspt_cap + factor(year) + factor(st), data = total_data)
 
+lm_mult_2 <- lm(admit ~ apwspt_cap + factor(st), data = total_data)
 
+lm_mult_3 <- lm(admit ~ apwspt_cap + factor(year), data = total_data)
+
+lm_mult_4 <- lm(admit ~ factor(year) + factor(st), data = total_data)
+
+var_labels <- c("(Intercept)" = "Intercept",
+                "apwspt_cap" = "Welfare spending per cap")
+
+modelsummary::modelsummary(list("Model 1 (welfare only)" = lm_1, 
+                                "Model 2 (welfare, year, and state)" = lm_mult_1, 
+                                "Model 3 (welfare and state)" = lm_mult_2, 
+                                "Model 4 (welfare and year)" = lm_mult_3,
+                                "Model 5 (state and year only)" = lm_mult_4),
+                           statistic = c("s.e. = {std.error}",
+                                         "p = {p.value}"),
+                           coef_map = var_labels,
+                           gof_map = c("nobs", "r.squared", "adj.r.squared"))
 ```
 
+A results section, including a presentation of your regression results (either a plot or a table), a separate plot of the main relationship of interest (e.g. a scatterplot of the outcome and the main independent variable), and as well as a summary and discussion of results in substantive context (a paragraph or two). 
+
+You should include at least one multiple regression (i.e. regression with multiple explanatory/independent variables) in your analysis, but note that you're not graded on the results themselves (like whether you see any statistical significance).
+
+You should also interpret (in plain English) the main coefficient of interest in your regression, comment on the statistical significance of the estimated coefficient, and  say whether or not you believe the coefficient to represent a causal effect.
+
+Model 1 conducts a regression on inmate admissions and welfare spending per capita without controlling for other variables. Model 1 suggests that an increase of one dollar in welfare spending per capita is associated with a decrease of 3.84 inmate admissions, with a p-value of <0.001. However, the regression for Model 1 results in an adjusted R^2 value of 0.02. This adjusted R^2 value, which represents how much variation in the data can be explained by welfare spending per capita, is quite low. 
+
+However, Model 2 conducts a multiple regression on inmate admissions and welfare spending per capita, controlling for state and year. This model results in the highest adjusted R^2 with a value of 0.785. This adjusted R^2 implies a high fit for the model. Model 2 suggests that when controlling for state and year, an increase of one dollar in welfare spending per capita is associated with an decrease of 6.09 inmate admissions, with a p-value of <0.001.
+
+Model 3 did not control for year and Model 4 did not control for state, each resulting in a lower adjusted R^2 than Model 2. When conducting a regression on inmate admissions using only state and year as independent variables and excluding welfare spending per capita, Model 5 resulted in the lower adjusted R^2 value than the Model 2, which included the welfare spending per capita as an explanatory variable of interest. 
 
 
 ```{r}
 total_data |>
-  ggplot(aes(x = apwpi,
-             y = (ADTOTM + ADTOTF)/poptotal*100)) +
-  geom_point() +
-  geom_smooth() +
-  ylim(0,.75) +
-   labs(x = "Welfare spending as % of state income",
-       y = "Inmate admission as % of state population",
+  ggplot(aes(x = apwspt_cap,
+             y = admit)) +
+  geom_point(aes(color = year, alpha = 0.5)) +
+  geom_smooth(method = "lm") +
+   labs(x = "Welfare spending per cap",
+       y = "Inmate admissions",
        title = "Inmate admission vs welfare spending, 1978-2019") 
-
-total_data |>
-  ggplot(aes(x = apwpi,
-             y = (JURTOTM + JURTOTF)/poptotal*100)) +
-  geom_point() +
-  geom_smooth() +
-  ylim(0,1) +
-   labs(x = "Welfare spending as % of state income",
-       y = "Inmates under jurisdiction as % of state population",
-       title = "Inmates under jurisdiction vs % welfare spending, 1978-2019")
-  
 ```
 
-```{r}
-## Cali
+## Conclusion
 
-total_data |>
-  filter(st == "CA") |>
-  ggplot(aes(x = apwpi,
-             y = (ADTOTM + ADTOTF)/poptotal*100)) +
-  geom_point() +
-  geom_smooth() +
-  ylim(0,.75) +
-   labs(x = "Welfare spending as % of state income",
-       y = "Inmate admission as % of state population",
-       title = "Inmate admission vs welfare spending, California 1978-2019") 
+A conclusion section, including a recap of results, discussion of limitations of the study, and how to improve the study in the future (a paragraph)
 
-total_data |>
-  filter(st == "CA") |>
-  ggplot(aes(x = apwpi,
-             y = (JURTOTM + JURTOTF)/poptotal*100)) +
-  geom_point() +
-  geom_smooth() +
-  ylim(0,1) +
-   labs(x = "Welfare spending as % of state income",
-       y = "Inmates under jurisdiction as % of state population",
-       title = "Inmates under jurisdiction vs % welfare spending, California 1978-2019")
 
-## Years 
 
-total_data |>
-  filter(year < 2000) |>
-  ggplot(aes(x = apwpi,
-             y = (ADTOTM + ADTOTF)/poptotal*100)) +
-  geom_point() +
-  geom_smooth() +
-  ylim(0,.75) +
-   labs(x = "Welfare spending as % of state income",
-       y = "Inmate admission as % of state population",
-       title = "Inmate admission vs % welfare spending, 1978-2000") 
 
-total_data |>
-  filter(year < 2000) |>
-  ggplot(aes(x = apwpi,
-             y = (JURTOTM + JURTOTF)/poptotal*100)) +
-  geom_point() +
-  geom_smooth() +
-  ylim(0,1) +
-   labs(x = "Welfare spending as % of state income",
-       y = "Inmates under jurisdiction as % of state population",
-       title = "Inmates under jurisdiction vs % welfare spending, 1978-2000")
-```
-
-## Data Analysis 
-
-```{r}
-## welfare spending % vs admission
-
-lm_apwpi <- lm((ADTOTM + ADTOTF) ~ apwpi, data = total_data)
-
-lm_apwpi |>
-broom::tidy() |> select(term, estimate) |> knitr::kable(digits = 2)
-
-glance(lm_apwpi)
-```
-This linear model estimates that there is, on average, an increase of 101122.46 inmate admissions with a unit increase in welfare spending as  percent of state income (from a percent of 0 to 100). 
-
-```{r}
-lm_apwpi_year <- lm((ADTOTM + ADTOTF) ~ apwpi + year, data = total_data)
-
-lm_apwpi_year |>
-broom::tidy() |> select(term, estimate) |> knitr::kable(digits = 2)
-
-glance(lm_apwpi_year)
-```
-This linear model estimates that there is, on average, an decrease of -174428.6 inmate admissions with a unit increase in welfare spending as the percent of state income (from a percent of 0 to 100), when holding the year the same. Additionally, it estimates that there is an increase of 400.7 inmate admissions with a unit increase in year, when holding welfare spending as  percent of state income the same. 
