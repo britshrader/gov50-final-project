@@ -1,11 +1,12 @@
 ---
 title: "Gov 50 Final Project"
 author: "Brit Shrader"
-description: "My final project"
+description: "Incarceration Rates and Welfare Spending"
 output:
   distill::distill_article:
     self_contained: false
 ---
+# The Impact of Welfare Spending on Incarceration 
 
 ## Introduction 
 
@@ -132,7 +133,7 @@ Due to the nature of this study as both observational and cross-sectional, we ca
 total_data |>
   ggplot(aes(x = apwspt_cap,
              y = admit)) +
-  geom_point(aes(color = year, alpha = .5)) +
+  geom_point(aes(color = year, alpha = .5, position = "jitter")) +
   geom_smooth(method = "lm") +
    labs(x = "Welfare spending per cap",
        y = "Inmate admissions",
@@ -141,8 +142,6 @@ total_data |>
 ```
 
 ## Conclusion
-
-A conclusion section, including a recap of results, discussion of limitations of the study, and how to improve the study in the future (a paragraph)
 
 In conclusion, when studying the relationship between incarceration admission rates and welfare spending per capita, the model that controls for state and year results in the best fit, based on its adjusted R^2. This model suggests that when holding state and year fixed, an increase of one dollar in welfare spending per capita is associated with a decrease of 6.09 (+/- 2.14) inmate admissions. While this provides support for my hypothesis that increased welfare spending decreases incarceration rates, I cannot make any casual claims about the relationship between incarceration admission rates and welfare spending per capita due to the limitations of this study. For this study, I must assume that these variables are the best representation of incarceration rates and welfare spending and that there is a linear relationship between these two variables. Additionally, I have to assume there are no unobserved confounding variables that influence this relationship. Due to the observational and cross-sectional nature of this study, it is not possible to make causal claims because I do not analyze how changes in welfare spending per capita influence incarceration admission rates. 
 
